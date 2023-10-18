@@ -1,5 +1,5 @@
 <?php
 include 'concerto.php';
 
-$concerto=Concerto::Create("123","Prova","bel concerto","25/11/2005");
+$concerto=Concerto::Create("123","Prova","bel concerto",'2000-01-01');
 ?>
