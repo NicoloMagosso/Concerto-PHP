@@ -1,4 +1,0 @@
-localhost
-3306
-user
-12345
