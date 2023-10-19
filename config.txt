@@ -1,0 +1,4 @@
+db_host=localhost
+db_name=organizzazione_concerti
+db_user=user
+db_pass=12345
