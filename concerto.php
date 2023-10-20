@@ -83,7 +83,7 @@ class Concerto
         $stmt = $db->prepare("INSERT INTO concerti (codice, titolo, descrizione, data) VALUES (?, ?, ?, ?)");
         $stmt->execute([$concerto->getCodice(), $concerto->getTitolo(), $concerto->getDescrizione(), $concerto->getData()]);
 
-        // Ottieni l'ID generato per il nuovo record
+        // Ottieni l'ID generato per il nuovo record ****DA CAMBIARE****
         $concerto->id = $db->lastInsertId();
 
         return $concerto;
