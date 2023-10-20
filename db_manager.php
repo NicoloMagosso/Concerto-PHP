@@ -28,7 +28,3 @@ class DbManager
         return self::$db;
     }
 }
-
-// Esempio di utilizzo:
-// $db = DbManager::connect();
-// Ora hai una connessione PDO disponibile per eseguire query al database.
