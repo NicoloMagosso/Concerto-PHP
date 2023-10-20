@@ -8,7 +8,7 @@ class DbManager
     public static function connect()
     {
         if (self::$db === null) {
-            // Leggi le credenziali dal file config.txt
+            // Legge le credenziali dal file config.txt
             $config = parse_ini_file('config.txt');
 
             $dbHost = $config['db_host'];
@@ -17,7 +17,7 @@ class DbManager
             $dbPass = $config['db_pass'];
 
             try {
-                // Crea una nuova connessione PDO
+                // Crea una connessione PDO
                 self::$db = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
                 self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $e) {
