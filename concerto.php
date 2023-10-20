@@ -81,7 +81,7 @@ class Concerto
         // Salva il nuovo oggetto nel database
         $db = DbManager::connect();
         $stmt = $db->prepare("INSERT INTO concerti (codice, titolo, descrizione, data) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$concerto->getCodice(), $concerto->getTitolo(), $concerto->getDescrizione(), $concerto->getData()->format('Y-m-d H:i:s')]);
+        $stmt->execute([$concerto->getCodice(), $concerto->getTitolo(), $concerto->getDescrizione(), $concerto->getData()]);
 
         // Ottieni l'ID generato per il nuovo record
         $concerto->id = $db->lastInsertId();
