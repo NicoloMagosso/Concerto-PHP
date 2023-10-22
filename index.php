@@ -1,5 +1,6 @@
 <?php
 include 'concerto.php';
+
 function MostraMenu()
 {
     echo "===========MENU\'=============================================\n";
@@ -13,7 +14,6 @@ function MostraMenu()
 }
 function CreateRecord()
 {
-
     // Creare un nuovo record
     $params = [
         'codice' => readline("Codice: "),
@@ -30,7 +30,7 @@ function MostraRecord()
     $id = readline("ID del record da visualizzare: ");
     $concerto = Concerto::Find($id);
     if ($concerto) {
-        $concerto->show();
+        $concerto->Show();
     } else {
         echo "Record non trovato.\n";
     }
@@ -48,7 +48,6 @@ function ModificaRecord()
         $data = readline("Vecchia data: " . $concerto->getData() . " Nuova data (utilizza il formato: YYYY-MM-DD)(premere invio se si vuole mantenere quella vecchia): ");
         echo "===================================\n";
 
-
         $params = [];
         if (!empty($codice)) {
             $params['codice'] = $codice;
@@ -63,9 +62,7 @@ function ModificaRecord()
             $params['data'] = $data;
         }
 
-
-
-        $concerto->update($params);
+        $concerto->Update($params);
         echo "Record modificato con successo.\n";
     } else {
         echo "Record non trovato.\n";
@@ -77,7 +74,7 @@ function DeleteRecord()
     $id = readline("ID del record da eliminare: ");
     $concerto = Concerto::Find($id);
     if ($concerto) {
-        $concerto->delete();
+        $concerto->Delete();
         echo "Record eliminato con successo.\n";
     } else {
         echo "Record non trovato.\n";
@@ -89,7 +86,7 @@ function ShowAll()
     $concerti = Concerto::FindAll();
 
     foreach ($concerti as $concerto) {
-        $concerto->show();
+        $concerto->Show();
         echo "-------------------\n";
     }
 }

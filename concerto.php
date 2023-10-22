@@ -73,16 +73,12 @@ class Concerto
 
         $db = DbManager::connect();
         
-        //verifca codice univoco
-        $stmt = $db->prepare("SELECT COUNT(*) as exist FROM concerti WHERE codice=:c");  
-        $stmt->bindParam(":c",$codice);
-        $stmt->execute();
-        $var=$stmt->fetch(pdo::FETCH_ASSOC); 
-        if($var['exist']>0)
+        if ($univoco=Concerto::Univoco($db, $codice))
         {
-            throw new ErrorException("il codice è già presente");
+            throw new ErrorException("\nIl codice del concerto è già presente.");
         }
-
+        else
+        {
         // Crea un nuovo oggetto Concerto
         $concerto = new Concerto();
         $concerto->setCodice($codice);
@@ -97,10 +93,28 @@ class Concerto
 
         $stmt->execute([$concerto->getCodice(), $concerto->getTitolo(), $concerto->getDescrizione(), $concerto->getData()->format('Y-m-d')]);
 
-        // Ottieni l'ID generato per il nuovo record ****DA CAMBIARE****
+        // Ottieni l'ID generato per il nuovo record
         $concerto->id = $db->lastInsertId();
+        }
         
         return $concerto;
+    }
+	
+	//Verifca se il codice è univoco
+    private static function Univoco($db, $codice)
+    {
+        $stmt = $db->prepare("SELECT COUNT(*) as exist FROM concerti WHERE codice=:c");  
+        $stmt->bindParam(":c",$codice);
+        $stmt->execute();
+        $var=$stmt->fetch(pdo::FETCH_ASSOC); 
+        if($var['exist']>0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     // Metodo statico per trovare un oggetto Concerto per ID
@@ -125,7 +139,7 @@ class Concerto
     }
 
     // Metodo per eliminare l'oggetto Concerto
-    public function delete()
+    public function Delete()
     {
         if ($this->id) {
             $db = DbManager::connect();
@@ -135,7 +149,7 @@ class Concerto
     }
 
     // Metodo per aggiornare l'oggetto Concerto
-    public function update($params)
+    public function Update($params)
     {
         // Aggiorna solo gli attributi specificati in $params
         if (isset($params['codice'])) {
@@ -151,14 +165,21 @@ class Concerto
             $this->setData($params['data']);
         }
 
-        // Aggiorna il record nel database
         $db = DbManager::connect();
+        if ($univoco=Concerto::Univoco($db, Concerto::getCodice()))
+        {
+            throw new ErrorException("\nIl codice del concerto è già presente.");
+        }
+        else
+        {
+        // Aggiorna il record nel database
         $stmt = $db->prepare("UPDATE concerti SET codice = ?, titolo = ?, descrizione = ?, data_concerto = ? WHERE id = ?");
         $stmt->execute([$this->getCodice(), $this->getTitolo(), $this->getDescrizione(), $this->getData(), $this->id]);
+        }
     }
 
     // Metodo per visualizzare l'oggetto Concerto
-    public function show()
+    public function Show()
     {
         echo "ID: {$this->getId()}\n";
         echo "Codice: {$this->getCodice()}\n";
