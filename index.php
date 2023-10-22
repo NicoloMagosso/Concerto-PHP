@@ -42,10 +42,10 @@ function ModificaRecord()
     $concerto = Concerto::Find($id);
     if ($concerto) {
 
-        $codice = readline("Vecchio codice: " . $concerto->getCodice() . " Nuovo codice(premere invio se si vuole mantenere il vecchio): ");
-        $titolo = readline("Vecchio titolo: " . $concerto->getTitolo() . " Nuovo titolo(premere invio se si vuole mantenere il vecchio): ");
-        $descrizione = readline("Vecchia descrizione: " . $concerto->getDescrizione() . " Nuova descrizione(premere invio se si vuole mantenere il vecchio): ");
-        $data = readline("Vecchia data: " . $concerto->getData() . " Nuova data (utilizza il formato: YYYY-MM-DD)(premere invio se si vuole mantenere quella vecchia): ");
+        $codice = readline("Vecchio codice: " . $concerto->getCodice() . ". Nuovo codice(premere invio se si vuole mantenere il vecchio): ");
+        $titolo = readline("Vecchio titolo: " . $concerto->getTitolo() . ". Nuovo titolo (premere invio se si vuole mantenere il vecchio): ");
+        $descrizione = readline("Vecchia descrizione: " . $concerto->getDescrizione() . ". Nuova descrizione (premere invio se si vuole mantenere il vecchio): ");
+        $data = readline("Vecchia data: " . $concerto->getData() . ". Nuova data (utilizza il formato: YYYY-MM-DD) (premere invio se si vuole mantenere quella vecchia): ");
         echo "===================================\n";
 
         $params = [];

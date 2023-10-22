@@ -166,16 +166,10 @@ class Concerto
         }
 
         $db = DbManager::connect();
-        if ($univoco=Concerto::Univoco($db, Concerto::getCodice()))
-        {
-            throw new ErrorException("\nIl codice del concerto è già presente.");
-        }
-        else
-        {
+        
         // Aggiorna il record nel database
         $stmt = $db->prepare("UPDATE concerti SET codice = ?, titolo = ?, descrizione = ?, data_concerto = ? WHERE id = ?");
         $stmt->execute([$this->getCodice(), $this->getTitolo(), $this->getDescrizione(), $this->getData(), $this->id]);
-        }
     }
 
     // Metodo per visualizzare l'oggetto Concerto
