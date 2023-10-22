@@ -9,7 +9,7 @@ class Concerto
     private $codice;
     private $titolo;
     private $descrizione;
-    private $data;
+    private $data_concerto;
 
     public function getId()
     {
@@ -48,17 +48,17 @@ class Concerto
 
     public function getData()
     {
-        return $this->data;
+        return $this->data_concerto;
     }
 
     public function setData($data)
     {
         // Assicurati che $data sia un oggetto DateTime
         if ($data instanceof DateTime) {
-            $this->data = $data;
+            $this->data_concerto = $data;
         } else {
             // Puoi implementare la conversione da stringa a DateTime se necessario
-            $this->data = new DateTime($data);
+            $this->data_concerto = new DateTime($data);
         }
     }
 
@@ -71,6 +71,18 @@ class Concerto
         $descrizione = $params['descrizione'];
         $data = $params['data'];
 
+        $db = DbManager::connect();
+        
+        //verifca codice univoco
+        $stmt = $db->prepare("SELECT COUNT(*) as exist FROM concerti WHERE codice=:c");  
+        $stmt->bindParam(":c",$codice);
+        $stmt->execute();
+        $var=$stmt->fetch(pdo::FETCH_ASSOC); 
+        if($var['exist']>0)
+        {
+            throw new ErrorException("il codice è già presente");
+        }
+
         // Crea un nuovo oggetto Concerto
         $concerto = new Concerto();
         $concerto->setCodice($codice);
@@ -80,12 +92,14 @@ class Concerto
 
         // Salva il nuovo oggetto nel database
         $db = DbManager::connect();
-        $stmt = $db->prepare("INSERT INTO concerti (codice, titolo, descrizione, data) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$concerto->getCodice(), $concerto->getTitolo(), $concerto->getDescrizione(), $concerto->getData()]);
+        
+        $stmt = $db->prepare("INSERT INTO concerti (codice, titolo, descrizione, data_concerto) VALUES (?, ?, ?, ?)");
+
+        $stmt->execute([$concerto->getCodice(), $concerto->getTitolo(), $concerto->getDescrizione(), $concerto->getData()->format('Y-m-d')]);
 
         // Ottieni l'ID generato per il nuovo record ****DA CAMBIARE****
         $concerto->id = $db->lastInsertId();
-
+        
         return $concerto;
     }
 
@@ -139,18 +153,18 @@ class Concerto
 
         // Aggiorna il record nel database
         $db = DbManager::connect();
-        $stmt = $db->prepare("UPDATE concerti SET codice = ?, titolo = ?, descrizione = ?, data = ? WHERE id = ?");
+        $stmt = $db->prepare("UPDATE concerti SET codice = ?, titolo = ?, descrizione = ?, data_concerto = ? WHERE id = ?");
         $stmt->execute([$this->getCodice(), $this->getTitolo(), $this->getDescrizione(), $this->getData(), $this->id]);
     }
 
     // Metodo per visualizzare l'oggetto Concerto
     public function show()
     {
-        echo "ID: {$this->id}\n";
-        echo "Codice: {$this->codice}\n";
-        echo "Titolo: {$this->titolo}\n";
-        echo "Descrizione: {$this->descrizione}\n";
-        echo "Data: {$this->data}\n";
+        echo "ID: {$this->getId()}\n";
+        echo "Codice: {$this->getCodice()}\n";
+        echo "Titolo: {$this->getTitolo()}\n";
+        echo "Descrizione: {$this->getDescrizione()}\n";
+        echo "Data: {$this->getData()}\n";
     }
 }
 ?>

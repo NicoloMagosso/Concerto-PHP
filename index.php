@@ -1,26 +1,31 @@
 <?php
 include 'concerto.php';
+function MostraMenu()
+{
+    echo "===========MENU\'=============================================\n";
+    echo "| 1) per creare un record                                    |\n";
+    echo "| 2) per mostrare un record                                  |\n";
+    echo "| 3) per modificare un record                                |\n";
+    echo "| 4) per eliminare un record                                 |\n";
+    echo "| 5) per mostrare tutti i records presenti nella tabella     |\n";
+    echo "| 0) per terminare il programma                              |\n";
+    echo "==============================================================\n";
+}
+function CreateRecord()
+{
 
-echo "Premi 1 per creare un record\n";
-echo "Premi 2 per mostrare un record\n";
-echo "Premi 3 per modificare un record\n";
-echo "Premi 4 per eliminare un record\n";
-echo "Premi 5 per mostrare tutti i records presenti nella tabella\n";
-echo "Premi 0 per terminare il programma\n";
-
-$choice = readline("Scelta: ");
-if ($choice == 1) {
     // Creare un nuovo record
     $params = [
         'codice' => readline("Codice: "),
         'titolo' => readline("Titolo: "),
         'descrizione' => readline("Descrizione: "),
-        'data' => readline("Data (utilizza il formato: YYYY-MM-DD HH:MM:SS): "),
+        'data' => readline("Data (utilizza il formato: YYYY-MM-DD): "),
     ];
-
     $concerto = Concerto::Create($params);
     echo "Record creato con successo.\n";
-} elseif ($choice == 2) {
+}
+function MostraRecord()
+{
     // Mostrare un record
     $id = readline("ID del record da visualizzare: ");
     $concerto = Concerto::Find($id);
@@ -29,37 +34,45 @@ if ($choice == 1) {
     } else {
         echo "Record non trovato.\n";
     }
-} elseif ($choice == 3) {
+}
+function ModificaRecord()
+{
     // Modificare un record
     $id = readline("ID del record da modificare: ");
     $concerto = Concerto::Find($id);
     if ($concerto) {
 
-        $codice = readline("Nuovo codice: ");
-        $titolo = readline("Nuovo titolo: ");
-        $descrizione = readline("Nuova descrizione: ");
-        $data = readline("Nuova data (utilizza il formato: YYYY-MM-DD HH:MM:SS): ");
-        $date = DateTime::createFromFormat('Y-m-d H:i:s', $input);
+        $codice = readline("Vecchio codice: " . $concerto->getCodice() . " Nuovo codice(premere invio se si vuole mantenere il vecchio): ");
+        $titolo = readline("Vecchio titolo: " . $concerto->getTitolo() . " Nuovo titolo(premere invio se si vuole mantenere il vecchio): ");
+        $descrizione = readline("Vecchia descrizione: " . $concerto->getDescrizione() . " Nuova descrizione(premere invio se si vuole mantenere il vecchio): ");
+        $data = readline("Vecchia data: " . $concerto->getData() . " Nuova data (utilizza il formato: YYYY-MM-DD)(premere invio se si vuole mantenere quella vecchia): ");
+        echo "===================================\n";
 
-        if ($date === false) {
 
-            echo "La data inserita non è nel formato corretto (YYYY-MM-DD HH:MM:SS)\n";
-        } else {
-
-            $params = [
-                $codice,
-                $titolo,
-                $descrizione,
-                $data,
-            ];
-            $concerto->update($params);
-            echo "Record modificato con successo.\n";
-
+        $params = [];
+        if (!empty($codice)) {
+            $params['codice'] = $codice;
         }
+        if (!empty($titolo)) {
+            $params['titolo'] = $titolo;
+        }
+        if (!empty($descrizione)) {
+            $params['descrizione'] = $descrizione;
+        }
+        if (!empty($data)) {
+            $params['data'] = $data;
+        }
+
+
+
+        $concerto->update($params);
+        echo "Record modificato con successo.\n";
     } else {
         echo "Record non trovato.\n";
     }
-} elseif ($choice == 4) {
+}
+function DeleteRecord()
+{
     // Eliminare un record
     $id = readline("ID del record da eliminare: ");
     $concerto = Concerto::Find($id);
@@ -69,14 +82,60 @@ if ($choice == 1) {
     } else {
         echo "Record non trovato.\n";
     }
-} elseif ($choice == 5) {
+}
+function ShowAll()
+{
     // Mostrare tutti i record
     $concerti = Concerto::FindAll();
+
     foreach ($concerti as $concerto) {
         $concerto->show();
         echo "-------------------\n";
     }
-} else {
-    echo "Programma terminato.\n";
 }
-?>
+
+
+
+while (true) {
+    MostraMenu();
+    $choice = readline("Scelta: ");
+    switch ($choice) {
+        case 0:
+            echo "programma terminato ";
+            exit(0);
+            break;
+        case 1:
+            try {
+                CreateRecord();
+            } catch (Exception $x) {
+                echo "si è verificato un errore: " . $x->getMessage() . "\n";
+            };
+            break;
+        case 2:
+            try {
+                MostraRecord();
+            } catch (Exception $x) {
+                echo "si è verificato un errore: " . $x->getMessage() . "\n";
+            };
+            break;
+        case 3:
+            ShowAll();
+            try {
+                ModificaRecord();
+            } catch (Exception $x) {
+                echo "si è verificato un errore: " . $x->getMessage() . "\n";
+            };
+            break;
+        case 4:
+            ShowAll();
+            try {
+                DeleteRecord();
+            } catch (Exception $x) {
+                echo "si è verificato un errore: " . $x->getMessage() . "\n";
+            };
+            break;
+        case 5:
+            ShowAll();
+            break;
+    }
+}
