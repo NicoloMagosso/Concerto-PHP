@@ -73,12 +73,15 @@ class Concerto
 
         $db = DbManager::connect();
         
-        if ($univoco=Concerto::Univoco($db, $codice))
+        $stmt = $db->prepare("SELECT COUNT(*) as exist FROM concerti WHERE codice=:c");  
+        $stmt->bindParam(":c",$params['codice']);
+        $stmt->execute();
+        $var=$stmt->fetch(pdo::FETCH_ASSOC); 
+        if($var['exist']>0)
         {
-            throw new ErrorException("\nIl codice del concerto è già presente.");
+            throw new Exception("il codice è già presente\n");
         }
-        else
-        {
+      
         // Crea un nuovo oggetto Concerto
         $concerto = new Concerto();
         $concerto->setCodice($codice);
@@ -95,28 +98,12 @@ class Concerto
 
         // Ottieni l'ID generato per il nuovo record
         $concerto->id = $db->lastInsertId();
-        }
+        
         
         return $concerto;
     }
 	
-	//Verifca se il codice è univoco
-    private static function Univoco($db, $codice)
-    {
-        $stmt = $db->prepare("SELECT COUNT(*) as exist FROM concerti WHERE codice=:c");  
-        $stmt->bindParam(":c",$codice);
-        $stmt->execute();
-        $var=$stmt->fetch(pdo::FETCH_ASSOC); 
-        if($var['exist']>0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
+	
     // Metodo statico per trovare un oggetto Concerto per ID
     public static function Find($id)
     {
@@ -155,6 +142,15 @@ class Concerto
         if (isset($params['codice'])) {
             $this->setCodice($params['codice']);
         }
+        $db = DbManager::connect();
+        $stmt = $db->prepare("SELECT COUNT(*) as exist FROM concerti WHERE codice=:c");  
+        $stmt->bindParam(":c",$params['codice']);
+        $stmt->execute();
+        $var=$stmt->fetch(pdo::FETCH_ASSOC); 
+        if($var['exist']>0)
+        {
+            throw new Exception("il codice è già presente\n");
+        }
         if (isset($params['titolo'])) {
             $this->setTitolo($params['titolo']);
         }
@@ -169,7 +165,7 @@ class Concerto
         
         // Aggiorna il record nel database
         $stmt = $db->prepare("UPDATE concerti SET codice = ?, titolo = ?, descrizione = ?, data_concerto = ? WHERE id = ?");
-        $stmt->execute([$this->getCodice(), $this->getTitolo(), $this->getDescrizione(), $this->getData(), $this->id]);
+        $stmt->execute([$this->getCodice(), $this->getTitolo(), $this->getDescrizione(), $this->getData()->format('Y-m-d'), $this->id]);
     }
 
     // Metodo per visualizzare l'oggetto Concerto
@@ -182,4 +178,3 @@ class Concerto
         echo "Data: {$this->getData()}\n";
     }
 }
-?>
