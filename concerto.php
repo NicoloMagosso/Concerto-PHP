@@ -64,7 +64,8 @@ class Concerto
     }
 
     // Metodo statico per ottenere una connessione al database
-    private static function getDbConnection() {
+    private static function getDbConnection()
+    {
         static $db = null;
         if ($db === null) {
             $db = DbManager::connect();
@@ -77,7 +78,7 @@ class Concerto
     {
         try {
             $db = self::getDbConnection();
-            
+
             // Prepara la query SQL per l'inserimento di un nuovo concerto
             $stmt = $db->prepare("INSERT INTO concerti (codice, titolo, descrizione, data_concerto) VALUES (:codice, :titolo, :descrizione, :data_concerto)");
 
@@ -86,7 +87,7 @@ class Concerto
             $titolo = $params['titolo'];
             $descrizione = $params['descrizione'];
             $data = $params['data'];
-    
+
             // Esegui la query con parametri preparati
             $stmt->bindParam(':codice', $codice);
             $stmt->bindParam(':titolo', $titolo);
@@ -96,9 +97,9 @@ class Concerto
             $stmt->execute();
 
             // Recupera il concerto appena inserito
-            $stmt = $db->prepare("SELECT * FROM organizzazione_concerti.concerti ORDER BY ID DESC LIMIT 1");
-            $concerto = $stmt->fetchObject();
-            
+            // $stmt = $db->prepare("SELECT * FROM organizzazione_concerti.concerti ORDER BY ID DESC LIMIT 1"); //ordinando gli id in modo decrescente avremo l'ultimo id inserito    
+            //$concerto = $stmt->fetchObject();
+
             return Concerto::Find($db->lastInsertId());
         } catch (PDOException $e) {
             // Gestisco la caduta di connessione
@@ -106,15 +107,16 @@ class Concerto
             return null;
         }
     }
-	
+
     // Metodo statico per trovare un oggetto concerto per ID
     public static function Find($id)
     {
         $db = self::getDbConnection();
-        
+
         // Prepara la query SQL per trovare un concerto per ID
-        $stmt = $db->prepare("SELECT * FROM concerti WHERE id = ?");
-        $stmt->execute([$id]);
+        $stmt = $db->prepare("SELECT * FROM concerti WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
         $result = $stmt->fetchObject('Concerto');
 
         return $result;
@@ -124,7 +126,7 @@ class Concerto
     public static function FindAll()
     {
         $db = self::getDbConnection();
-        
+
         // Esegui una query per trovare tutti i concerti
         $stmt = $db->query("SELECT * FROM concerti");
         $result = $stmt->fetchAll(PDO::FETCH_CLASS, 'Concerto');
@@ -137,10 +139,13 @@ class Concerto
     {
         if ($this->id) {
             $db = self::getDbConnection();
-            
+
             // Prepara la query SQL per eliminare un concerto per ID
-            $stmt = $db->prepare("DELETE FROM concerti WHERE id = ?");
-            $stmt->execute([$this->id]);
+            $stmt = $db->prepare("DELETE FROM concerti WHERE id = :id");
+            $stmt->bindParam(':id', $this->getId());
+            $stmt->execute();
+    
+           
         }
     }
 
@@ -152,14 +157,13 @@ class Concerto
             $this->setCodice($params['codice']);
         }
         $db = self::getDbConnection();
-        
+
         // Prepara la query SQL per verificare l'esistenza del codice
-        $stmt = $db->prepare("SELECT COUNT(*) as exist FROM concerti WHERE codice=:c");  
-        $stmt->bindParam(":c",$params['codice']);
+        $stmt = $db->prepare("SELECT COUNT(*) as exist FROM concerti WHERE codice=:codice");
+        $stmt->bindParam(":codice", $params['codice']);
         $stmt->execute();
-        $var=$stmt->fetch(pdo::FETCH_ASSOC); 
-        if($var['exist']>0)
-        {
+        $var = $stmt->fetch(pdo::FETCH_ASSOC);
+        if ($var['exist'] > 0) {
             throw new Exception("Il codice è già presente.\n");
         }
         if (isset($params['titolo'])) {
@@ -171,10 +175,16 @@ class Concerto
         if (isset($params['data'])) {
             $this->setData($params['data']);
         }
-        
+
         // Prepara la query SQL per l'aggiornamento
-        $stmt = $db->prepare("UPDATE concerti SET codice = ?, titolo = ?, descrizione = ?, data_concerto = ? WHERE id = ?");
-        $stmt->execute([$this->getCodice(), $this->getTitolo(), $this->getDescrizione(), $this->getData()->format('Y-m-d'), $this->id]);
+        $stmt = $db->prepare("UPDATE concerti SET codice = :codice, titolo = :titolo, descrizione = :descrizione, data_concerto = :data_concerto WHERE id = :id");
+        $stmt->bindParam(':codice', $this->getCodice());
+        $stmt->bindParam(':titolo', $this->getTitolo());
+        $stmt->bindParam(':descrizione', $this->getDescrizione());
+        $stmt->bindParam(':data_concerto', $this->getData()->format('Y-m-d'));
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
+       
     }
 
     // Metodo per visualizzare l'oggetto Concerto
