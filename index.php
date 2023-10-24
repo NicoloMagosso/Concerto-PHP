@@ -98,21 +98,21 @@ while (true) {
     $choice = readline("Scelta: ");
     switch ($choice) {
         case 0:
-            echo "programma terminato ";
+            echo "Programma terminato.";
             exit(0);
             break;
         case 1:
             try {
                 CreateRecord();
             } catch (Exception $x) {
-                echo "si è verificato un errore: " . $x->getMessage() . "\n";
+                echo "Si è verificato un errore: " . $x->getMessage() . "\n";
             };
             break;
         case 2:
             try {
                 MostraRecord();
             } catch (Exception $x) {
-                echo "si è verificato un errore: " . $x->getMessage() . "\n";
+                echo "Si è verificato un errore: " . $x->getMessage() . "\n";
             };
             break;
         case 3:
@@ -120,7 +120,7 @@ while (true) {
             try {
                 ModificaRecord();
             } catch (Exception $x) {
-                echo "si è verificato un errore: " . $x->getMessage() . "\n";
+                echo "Si è verificato un errore: " . $x->getMessage() . "\n";
             };
             break;
         case 4:
@@ -128,11 +128,12 @@ while (true) {
             try {
                 DeleteRecord();
             } catch (Exception $x) {
-                echo "si è verificato un errore: " . $x->getMessage() . "\n";
+                echo "Si è verificato un errore: " . $x->getMessage() . "\n";
             };
             break;
         case 5:
             ShowAll();
             break;
     }
+    readline();
 }

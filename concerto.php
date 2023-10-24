@@ -65,40 +65,31 @@ class Concerto
     // Metodo statico per creare un nuovo oggetto Concerto
     public static function Create($params)
     {
+        $db = DbManager::connect();
+        $stmt = $db->prepare("INSERT INTO concerti (codice, titolo, descrizione, data_concerto) VALUES (:codice, :titolo, :descrizione, :data_concerto)");
+
         // Estrai i dati dall'array $params
         $codice = $params['codice'];
         $titolo = $params['titolo'];
         $descrizione = $params['descrizione'];
         $data = $params['data'];
-
-        $db = DbManager::connect();
-        
-        $stmt = $db->prepare("SELECT COUNT(*) as exist FROM concerti WHERE codice=:c");  
-        $stmt->bindParam(":c",$params['codice']);
+  
+        /*$stmt->bindParam(":c",$params['codice']);
         $stmt->execute();
         $var=$stmt->fetch(pdo::FETCH_ASSOC); 
         if($var['exist']>0)
         {
             throw new Exception("il codice è già presente\n");
-        }
+        }*/
       
-        // Crea un nuovo oggetto Concerto
-        $concerto = new Concerto();
-        $concerto->setCodice($codice);
-        $concerto->setTitolo($titolo);
-        $concerto->setDescrizione($descrizione);
-        $concerto->setData($data);
+        $stmt->bindParam(':codice', $codice);
+        $stmt->bindParam(':titolo', $titolo);
+        $stmt->bindParam(':descrizione', $descrizione);
+        $stmt->bindParam(':data_concerto', $data);
 
-        // Salva il nuovo oggetto nel database
-        $db = DbManager::connect();
-        
-        $stmt = $db->prepare("INSERT INTO concerti (codice, titolo, descrizione, data_concerto) VALUES (?, ?, ?, ?)");
-
-        $stmt->execute([$concerto->getCodice(), $concerto->getTitolo(), $concerto->getDescrizione(), $concerto->getData()->format('Y-m-d')]);
-
-        // Ottieni l'ID generato per il nuovo record
-        $concerto->id = $db->lastInsertId();
-        
+        $stmt->execute();
+        $stmt = $db->prepare("SELECT * FROM Organizzazione_Concerti.concerti ORDER BY ID DESC LIMIT 1");
+        $concerto = $stmt->fetchobject();
         
         return $concerto;
     }
@@ -149,7 +140,7 @@ class Concerto
         $var=$stmt->fetch(pdo::FETCH_ASSOC); 
         if($var['exist']>0)
         {
-            throw new Exception("il codice è già presente\n");
+            throw new Exception("Il codice è già presente.\n");
         }
         if (isset($params['titolo'])) {
             $this->setTitolo($params['titolo']);
