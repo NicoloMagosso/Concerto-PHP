@@ -1,6 +1,6 @@
 <?php
 
-//Includi la classe DbManager per la connessione al database
+// Includi la classe DbManager per la connessione al database
 require_once('db_manager.php');
 
 class Concerto
@@ -63,39 +63,54 @@ class Concerto
         }
     }
 
+    // Metodo statico per ottenere una connessione al database
+    private static function getDbConnection() {
+        static $db = null;
+        if ($db === null) {
+            $db = DbManager::connect();
+        }
+        return $db;
+    }
+
     // Metodo statico per creare un nuovo oggetto Concerto
     public static function Create($params)
     {
-        $db = DbManager::connect();
-        
-        // Prepara la query SQL per l'inserimento di un nuovo concerto
-        $stmt = $db->prepare("INSERT INTO concerti (codice, titolo, descrizione, data_concerto) VALUES (:codice, :titolo, :descrizione, :data_concerto)");
+        try {
+            $db = self::getDbConnection();
+            
+            // Prepara la query SQL per l'inserimento di un nuovo concerto
+            $stmt = $db->prepare("INSERT INTO concerti (codice, titolo, descrizione, data_concerto) VALUES (:codice, :titolo, :descrizione, :data_concerto)");
 
-        // Estrai i dati dall'array $params
-        $codice = $params['codice'];
-        $titolo = $params['titolo'];
-        $descrizione = $params['descrizione'];
-        $data = $params['data'];
-  
-        // Esegui la query con parametri preparati
-        $stmt->bindParam(':codice', $codice);
-        $stmt->bindParam(':titolo', $titolo);
-        $stmt->bindParam(':descrizione', $descrizione);
-        $stmt->bindParam(':data_concerto', $data);
+            // Estrai i dati dall'array $params
+            $codice = $params['codice'];
+            $titolo = $params['titolo'];
+            $descrizione = $params['descrizione'];
+            $data = $params['data'];
+    
+            // Esegui la query con parametri preparati
+            $stmt->bindParam(':codice', $codice);
+            $stmt->bindParam(':titolo', $titolo);
+            $stmt->bindParam(':descrizione', $descrizione);
+            $stmt->bindParam(':data_concerto', $data);
 
-        $stmt->execute();
+            $stmt->execute();
 
-        // Recupera il concerto appena inserito
-        $stmt = $db->prepare("SELECT * FROM organizzazione_concerti.concerti ORDER BY ID DESC LIMIT 1");
-        $concerto = $stmt->fetchObject();
-        
-        return Concerto::Find($db->lastInsertId());
+            // Recupera il concerto appena inserito
+            $stmt = $db->prepare("SELECT * FROM organizzazione_concerti.concerti ORDER BY ID DESC LIMIT 1");
+            $concerto = $stmt->fetchObject();
+            
+            return Concerto::Find($db->lastInsertId());
+        } catch (PDOException $e) {
+            // Gestisco la caduta di connessione
+            echo "Errore di connessione al database durante la creazione del concerto: " . $e->getMessage();
+            return null;
+        }
     }
 	
     // Metodo statico per trovare un oggetto concerto per ID
     public static function Find($id)
     {
-        $db = DbManager::connect();
+        $db = self::getDbConnection();
         
         // Prepara la query SQL per trovare un concerto per ID
         $stmt = $db->prepare("SELECT * FROM concerti WHERE id = ?");
@@ -108,7 +123,7 @@ class Concerto
     // Metodo statico per trovare tutti gli oggetti concerto
     public static function FindAll()
     {
-        $db = DbManager::connect();
+        $db = self::getDbConnection();
         
         // Esegui una query per trovare tutti i concerti
         $stmt = $db->query("SELECT * FROM concerti");
@@ -121,7 +136,7 @@ class Concerto
     public function Delete()
     {
         if ($this->id) {
-            $db = DbManager::connect();
+            $db = self::getDbConnection();
             
             // Prepara la query SQL per eliminare un concerto per ID
             $stmt = $db->prepare("DELETE FROM concerti WHERE id = ?");
@@ -136,7 +151,7 @@ class Concerto
         if (isset($params['codice'])) {
             $this->setCodice($params['codice']);
         }
-        $db = DbManager::connect();
+        $db = self::getDbConnection();
         
         // Prepara la query SQL per verificare l'esistenza del codice
         $stmt = $db->prepare("SELECT COUNT(*) as exist FROM concerti WHERE codice=:c");  
