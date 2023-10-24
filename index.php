@@ -4,7 +4,7 @@ include 'concerto.php';
 function MostraMenu()
 {
     echo "===========MENU\'=======================================\n";
-    echo "| 1) Creare un record                                  |\n";
+    echo "| 1) Crea un record                                    |\n";
     echo "| 2) Mostra un record                                  |\n";
     echo "| 3) Modifica un record                                |\n";
     echo "| 4) Elimina un record                                 |\n";
@@ -12,6 +12,7 @@ function MostraMenu()
     echo "| 0) Termina il programma                              |\n";
     echo "========================================================\n";
 }
+
 function CreateRecord()
 {
     // Creare un nuovo record
@@ -24,6 +25,7 @@ function CreateRecord()
     $concerto = Concerto::Create($params);
     echo "Record creato con successo.\n";
 }
+
 function MostraRecord()
 {
     // Mostrare un record
@@ -35,6 +37,7 @@ function MostraRecord()
         echo "Record non trovato.\n";
     }
 }
+
 function ModificaRecord()
 {
     // Modificare un record
@@ -42,25 +45,18 @@ function ModificaRecord()
     $concerto = Concerto::Find($id);
     if ($concerto) {
 
-        $codice = readline("Vecchio codice: " . $concerto->getCodice() . ". Nuovo codice(premere invio se si vuole mantenere il vecchio): ");
+        $codice = readline("Vecchio codice: " . $concerto->getCodice() . ". Nuovo codice (premere invio se si vuole mantenere il vecchio): ");
         $titolo = readline("Vecchio titolo: " . $concerto->getTitolo() . ". Nuovo titolo (premere invio se si vuole mantenere il vecchio): ");
         $descrizione = readline("Vecchia descrizione: " . $concerto->getDescrizione() . ". Nuova descrizione (premere invio se si vuole mantenere il vecchio): ");
         $data = readline("Vecchia data: " . $concerto->getData() . ". Nuova data (utilizza il formato: YYYY-MM-DD) (premere invio se si vuole mantenere quella vecchia): ");
         echo "===================================\n";
 
-        $params = [];
-        if (!empty($codice)) {
-            $params['codice'] = $codice;
-        }
-        if (!empty($titolo)) {
-            $params['titolo'] = $titolo;
-        }
-        if (!empty($descrizione)) {
-            $params['descrizione'] = $descrizione;
-        }
-        if (!empty($data)) {
-            $params['data'] = $data;
-        }
+        $params = [
+            'codice' => (!empty($codice)) ? $codice : $concerto->getCodice(), // il punto di domanda è un operatore ternario, se il codice non è vuoto lo salva nella variabile $codice sennò mantiene quello che c'era prima
+            'titolo' => (!empty($titolo)) ? $titolo : $concerto->getTitolo(),
+            'descrizione' => (!empty($descrizione)) ? $descrizione : $concerto->getDescrizione(),
+            'data' => (!empty($data)) ? $data : $concerto->getData(),
+        ];
 
         $concerto->Update($params);
         echo "Record modificato con successo.\n";
@@ -68,6 +64,7 @@ function ModificaRecord()
         echo "Record non trovato.\n";
     }
 }
+
 function DeleteRecord()
 {
     // Eliminare un record
@@ -80,6 +77,7 @@ function DeleteRecord()
         echo "Record non trovato.\n";
     }
 }
+
 function ShowAll()
 {
     // Mostrare tutti i record
@@ -90,8 +88,6 @@ function ShowAll()
         echo "-------------------\n";
     }
 }
-
-
 
 while (true) {
     MostraMenu();

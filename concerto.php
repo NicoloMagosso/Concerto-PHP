@@ -96,6 +96,10 @@ class Concerto
 
             $stmt->execute();
 
+            // Recupera il concerto appena inserito
+            // $stmt = $db->prepare("SELECT * FROM organizzazione_concerti.concerti ORDER BY ID DESC LIMIT 1"); //ordinando gli id in modo decrescente avremo l'ultimo id inserito    
+            //$concerto = $stmt->fetchObject();
+
             return Concerto::Find($db->lastInsertId());
         } catch (PDOException $e) {
             // Gestisco la caduta di connessione
@@ -138,7 +142,7 @@ class Concerto
 
             // Prepara la query SQL per eliminare un concerto per ID
             $stmt = $db->prepare("DELETE FROM concerti WHERE id = :id");
-            $stmt->bindParam(':id', $this->getId());
+            $stmt->bindParam(':id', $this->id);
             $stmt->execute();
         }
     }
@@ -147,39 +151,20 @@ class Concerto
     public function Update($params)
     {
         // Aggiorna solo gli attributi specificati in $params
-        if (isset($params['codice'])) {
-            $this->setCodice($params['codice']);
-        }
         $db = self::getDbConnection();
-
-        // Prepara la query SQL per verificare l'esistenza del codice
-        $stmt = $db->prepare("SELECT COUNT(*) as exist FROM concerti WHERE codice=:codice");
-        $stmt->bindParam(":codice", $params['codice']);
-        $stmt->execute();
-        $var = $stmt->fetch(pdo::FETCH_ASSOC);
-        if ($var['exist'] > 0) {
-            throw new Exception("Il codice è già presente.\n");
-        }
-        if (isset($params['titolo'])) {
-            $this->setTitolo($params['titolo']);
-        }
-        if (isset($params['descrizione'])) {
-            $this->setDescrizione($params['descrizione']);
-        }
-        if (isset($params['data'])) {
-            $this->setData($params['data']);
-        }
+        $codice = $params['codice'];
+        $titolo = $params['titolo'];
+        $descrizione = $params['descrizione'];
+        $data = $params['data'];
 
         // Prepara la query SQL per l'aggiornamento
         $stmt = $db->prepare("UPDATE concerti SET codice = :codice, titolo = :titolo, descrizione = :descrizione, data_concerto = :data_concerto WHERE id = :id");
-        $stmt->bindParam(':codice', $this->getCodice());
-        $stmt->bindParam(':titolo', $this->getTitolo());
-        $stmt->bindParam(':descrizione', $this->getDescrizione());
-        $stmt->bindParam(':data_concerto', $this->getData()->format('Y-m-d'));
+        $stmt->bindParam(':codice', $codice);
+        $stmt->bindParam(':titolo', $titolo);
+        $stmt->bindParam(':descrizione', $descrizione);
+        $stmt->bindParam(':data_concerto', $data);
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
-
-        return Concerto::Find($db->lastInsertId());
     }
 
     // Metodo per visualizzare l'oggetto Concerto
