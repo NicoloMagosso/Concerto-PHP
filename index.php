@@ -3,14 +3,14 @@ include 'concerto.php';
 
 function MostraMenu()
 {
-    echo "===========MENU\'=============================================\n";
-    echo "| 1) per creare un record                                    |\n";
-    echo "| 2) per mostrare un record                                  |\n";
-    echo "| 3) per modificare un record                                |\n";
-    echo "| 4) per eliminare un record                                 |\n";
-    echo "| 5) per mostrare tutti i records presenti nella tabella     |\n";
-    echo "| 0) per terminare il programma                              |\n";
-    echo "==============================================================\n";
+    echo "===========MENU\'=======================================\n";
+    echo "| 1) Creare un record                                  |\n";
+    echo "| 2) Mostra un record                                  |\n";
+    echo "| 3) Modifica un record                                |\n";
+    echo "| 4) Elimina un record                                 |\n";
+    echo "| 5) Mostra tutti i records presenti nella tabella     |\n";
+    echo "| 0) Termina il programma                              |\n";
+    echo "========================================================\n";
 }
 function CreateRecord()
 {
