@@ -10,7 +10,7 @@ class DbManager
         if (self::$db === null) {
             // Legge le credenziali dal file config.txt
             $config = parse_ini_file('config.txt');
-            
+
             $dbHost = $config['db_host'];
             $dbName = $config['db_name'];
             $dbUser = $config['db_user'];
