@@ -88,10 +88,10 @@ class Concerto
         $stmt->bindParam(':data_concerto', $data);
 
         $stmt->execute();
-        $stmt = $db->prepare("SELECT * FROM Organizzazione_Concerti.concerti ORDER BY ID DESC LIMIT 1");
+        $stmt = $db->prepare("SELECT * FROM organizzazione_concerti.concerti ORDER BY ID DESC LIMIT 1");
         $concerto = $stmt->fetchobject();
         
-        return $concerto;
+        return Concerto::Find($db->lastInsertId());
     }
 	
 	
@@ -151,8 +151,6 @@ class Concerto
         if (isset($params['data'])) {
             $this->setData($params['data']);
         }
-
-        $db = DbManager::connect();
         
         // Aggiorna il record nel database
         $stmt = $db->prepare("UPDATE concerti SET codice = ?, titolo = ?, descrizione = ?, data_concerto = ? WHERE id = ?");
