@@ -96,10 +96,6 @@ class Concerto
 
             $stmt->execute();
 
-            // Recupera il concerto appena inserito
-            // $stmt = $db->prepare("SELECT * FROM organizzazione_concerti.concerti ORDER BY ID DESC LIMIT 1"); //ordinando gli id in modo decrescente avremo l'ultimo id inserito    
-            //$concerto = $stmt->fetchObject();
-
             return Concerto::Find($db->lastInsertId());
         } catch (PDOException $e) {
             // Gestisco la caduta di connessione
