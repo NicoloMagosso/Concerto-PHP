@@ -58,7 +58,7 @@ class Concerto
         if ($data instanceof DateTime) {
             $this->data_concerto = $data;
         } else {
-            // Puoi implementare la conversione da stringa a DateTime se necessario
+            // Implementa la conversione da stringa a DateTime se necessario
             $this->data_concerto = new DateTime($data);
         }
     }
@@ -95,7 +95,7 @@ class Concerto
             $stmt->bindParam(':data_concerto', $data);
 
             $stmt->execute();
-
+            // Ritorna l'ID del concerto creato
             return Concerto::Find($db->lastInsertId());
         } catch (PDOException $e) {
             // Gestisco la caduta di connessione
