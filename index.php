@@ -3,7 +3,7 @@ include 'concerto.php';
 
 function MostraMenu()
 {
-    echo "===========MENU\'=======================================\n";
+    echo "=========================MENU'==========================\n";
     echo "| 1) Crea un record                                    |\n";
     echo "| 2) Mostra un record                                  |\n";
     echo "| 3) Modifica un record                                |\n";
@@ -21,6 +21,7 @@ function CreateRecord()
         'titolo' => readline("Titolo: "),
         'descrizione' => readline("Descrizione: "),
         'data' => readline("Data (utilizza il formato: YYYY-MM-DD): "),
+        'sala' => readline("Sala: "),
     ];
     $concerto = Concerto::Create($params);
     echo "Record creato con successo.\n";
@@ -47,7 +48,8 @@ function ModificaRecord()
 
         $codice = readline("Vecchio codice: " . $concerto->getCodice() . ". Nuovo codice (premere invio se si vuole mantenere il vecchio): ");
         $titolo = readline("Vecchio titolo: " . $concerto->getTitolo() . ". Nuovo titolo (premere invio se si vuole mantenere il vecchio): ");
-        $descrizione = readline("Vecchia descrizione: " . $concerto->getDescrizione() . ". Nuova descrizione (premere invio se si vuole mantenere il vecchio): ");
+        $descrizione = readline("Vecchia descrizione: " . $concerto->getDescrizione() . ". Nuova descrizione (premere invio se si vuole mantenere quella vecchia): ");
+        $sala = readline("Vecchia sala: " . $concerto->getSala() . ". Nuova sala (premere invio se si vuole mantenere quella vecchia): ");
         $data = readline("Vecchia data: " . $concerto->getData() . ". Nuova data (utilizza il formato: YYYY-MM-DD) (premere invio se si vuole mantenere quella vecchia): ");
         echo "===================================\n";
 
@@ -56,6 +58,7 @@ function ModificaRecord()
             'titolo' => (!empty($titolo)) ? $titolo : $concerto->getTitolo(),
             'descrizione' => (!empty($descrizione)) ? $descrizione : $concerto->getDescrizione(),
             'data' => (!empty($data)) ? $data : $concerto->getData(),
+            'sala' => (!empty($sala)) ? $sala : $concerto->getSala(),
         ];
 
         $concerto->Update($params);

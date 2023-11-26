@@ -2,6 +2,7 @@
 
 // Includi la classe DbManager per la connessione al database
 require_once('db_manager.php');
+require_once('sala.php');
 
 class Concerto
 {
@@ -11,6 +12,7 @@ class Concerto
     private $titolo;
     private $descrizione;
     private $data_concerto;
+    private $sala;
 
     public function getId()
     {
@@ -63,6 +65,11 @@ class Concerto
         }
     }
 
+    public function getSala()
+    {
+        return $this->sala;
+    }
+
     // Metodo statico per ottenere una connessione al database
     private static function getDbConnection()
     {
@@ -87,12 +94,14 @@ class Concerto
             $titolo = $params['titolo'];
             $descrizione = $params['descrizione'];
             $data = $params['data'];
+            $sala = $params['sala'];
 
             // Esegui la query con parametri preparati
             $stmt->bindParam(':codice', $codice);
             $stmt->bindParam(':titolo', $titolo);
             $stmt->bindParam(':descrizione', $descrizione);
             $stmt->bindParam(':data_concerto', $data);
+            $stmt->bindParam(':sala', $sala);
 
             $stmt->execute();
             // Ritorna l'ID del concerto creato
@@ -152,6 +161,7 @@ class Concerto
         $titolo = $params['titolo'];
         $descrizione = $params['descrizione'];
         $data = $params['data'];
+        $sala = $params['sala'];
 
         // Prepara la query SQL per l'aggiornamento
         $stmt = $db->prepare("UPDATE concerti SET codice = :codice, titolo = :titolo, descrizione = :descrizione, data_concerto = :data_concerto WHERE id = :id");
@@ -159,6 +169,7 @@ class Concerto
         $stmt->bindParam(':titolo', $titolo);
         $stmt->bindParam(':descrizione', $descrizione);
         $stmt->bindParam(':data_concerto', $data);
+        $stmt->bindParam(':sala', $sala);
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
     }
@@ -171,5 +182,6 @@ class Concerto
         echo "Titolo: {$this->getTitolo()}\n";
         echo "Descrizione: {$this->getDescrizione()}\n";
         echo "Data: {$this->getData()}\n";
+        echo "Sala: {$this->getSala()}\n";
     }
 }
